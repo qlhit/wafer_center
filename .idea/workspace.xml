@@ -5,15 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="82f5746b-26ba-4bc0-bfb0-56b562414c76" name="Changes" comment="wafer_center">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/numpy/typing/tests/data/reveal/testing.pyi" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/numpy/typing/tests/data/reveal/testing.pyi" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lib/site-packages/scipy/odr/_odrpack.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lib/site-packages/scipy/odr/_odrpack.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wafer_center/ng_ars_magsac++/adaptive_reordering_sampler_7.py" beforeDir="false" afterPath="$PROJECT_DIR$/wafer_center/ng_ars_magsac++/adaptive_reordering_sampler_7.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wafer_center/ng_ars_magsac++/magsac++.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/wafer_center/ng_ars_magsac++/util.py" beforeDir="false" afterPath="$PROJECT_DIR$/wafer_center/ng_ars_magsac++/util.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +21,12 @@
   </component>
   <component name="Git.Settings">
     <option name="PATH_TO_GIT" value="D:\software\Git\cmd\git.exe" />
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--tags" />
+        <option name="title" value="All" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProblemsViewState">
@@ -298,6 +296,7 @@
       <workItem from="1746097419398" duration="1883000" />
       <workItem from="1746101083959" duration="849000" />
       <workItem from="1746102151840" duration="6017000" />
+      <workItem from="1746176635320" duration="461000" />
     </task>
     <task id="LOCAL-00001" summary="wafer_center">
       <option name="closed" value="true" />
@@ -315,7 +314,23 @@
       <option name="project" value="LOCAL" />
       <updated>1745288689577</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="wafer_center">
+      <option name="closed" value="true" />
+      <created>1746176907891</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1746176907891</updated>
+    </task>
+    <task id="LOCAL-00004" summary="wafer_center">
+      <option name="closed" value="true" />
+      <created>1746177074081</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1746177074081</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
