@@ -2,12 +2,23 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from scipy.optimize import leastsq
+from scipy.special import gammaincinv
 from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import util
+import magsacpp_1
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+
+max_sigma = 5
+n = 2  # 残差维度
+alpha = 0.99  # 置信度
+max_iter = 100
+# 预计算伽马函数常数
+C = 1 / (2 ** (n / 2) * util.gamma_complete(n / 2))
+k = np.sqrt(2 * gammaincinv((n - 1) / 2, alpha))
 
 
 # 定义神经网络模型
@@ -25,7 +36,22 @@ class WeightPredictor(nn.Module):
         )
 
     def forward(self, x):
-        return get_newWeights(self.layers(x), x[:,0], x[:,1], torch.tensor([2, 3], dtype=torch.float32), 1.5)
+        return get_newWeights(self.layers(x), x[:, 0], x[:, 1], torch.tensor([2, 3], dtype=torch.float32), 1.5)
+
+
+def sigma_aware_weights(residuals):
+    """基于残差的概率密度计算权重"""
+    weights = []
+    for r in residuals:
+        if r > k * max_sigma:
+            weights.append(0.0)
+            continue
+        term1 = util.gamma_upper((n - 1) / 2, r.detach().numpy() ** 2 / (2 * max_sigma ** 2))
+        term2 = util.gamma_upper((n - 1) / 2, k ** 2 / 2)
+        numerator = C * (2 ** ((n - 1) / 2)) * (term1 - term2)
+        denominator = 1 / max_sigma
+        weights.append(numerator * denominator)
+    return torch.tensor(weights)
 
 
 # 加权最小二乘拟合函数
@@ -42,6 +68,7 @@ def weighted_least_squares_fit(x, y, w):
     a, b, c = theta[0], theta[1], theta[2]
     r = torch.sqrt(a ** 2 + b ** 2 - c)
     residuals = torch.sqrt((x - a) ** 2 + (y - b) ** 2) - r
+    print(a,b,r,c)
     return residuals
 
 
@@ -54,12 +81,15 @@ def get_newWeights(weights, batch_x, batch_y, true_center, radius):
     # 计算距离过小的样本点的惩罚因子
     min_distance = radius - 0.12 * mean_distance
     max_distance = radius + 0.12 * mean_distance
-    penalty_min = torch.where(distance < min_distance, torch.abs(distance - distance/mean_distance), torch.zeros_like(distance))
-    penalty_max = torch.where(distance > max_distance, torch.abs(distance - distance/mean_distance), torch.zeros_like(distance))
+    penalty_min = torch.where(distance < min_distance, torch.abs(distance - distance / mean_distance),
+                              torch.zeros_like(distance))
+    penalty_max = torch.where(distance > max_distance, torch.abs(distance - distance / mean_distance),
+                              torch.zeros_like(distance))
     penalty = penalty_min + penalty_max
+
+    # sigma_aware_weights(residuals)
     # 应用惩罚因子到权重上
     return weights - weights * penalty.view(-1, 1)
-
 
 
 # 训练函数
@@ -71,7 +101,8 @@ def train(model, data_loader, optimizer, epochs):
             optimizer.zero_grad()
             w_pred = model(torch.stack([batch_x, batch_y], dim=1))
             residuals = weighted_least_squares_fit(batch_x, batch_y, w_pred)
-            loss = torch.sum(w_pred * residuals)
+            # w_pred = sigma_aware_weights(residuals)
+            loss = torch.sum(w_pred * rho(residuals))
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
@@ -87,6 +118,19 @@ def generate_data(num_points, center_x, center_y, radius, noise_std):
     x = center_x + radius * np.cos(angles) + np.random.normal(0, noise_std, num_points)
     y = center_y + radius * np.sin(angles) + np.random.normal(0, noise_std, num_points)
     return x, y
+
+
+def rho(r):
+    quality = []
+    # Implement rho function from the paper
+    for r in r:
+        if r > k * max_sigma:
+            return max_sigma * C * 2 ** ((n - 1) / 2) * util.gamma_lower((n + 1) / 2, k ** 2 / 2)
+        r = r.detach().numpy()
+        term1 = util.gamma_lower((n + 1) / 2, r ** 2 / (2 * max_sigma ** 2))
+        term2 = util.gamma_upper((n - 1) / 2, r ** 2 / (2 * max_sigma ** 2)) - util.gamma_upper((n - 1) / 2, k ** 2 / 2)
+        quality.append(C * 2 ** ((n + 1) / 2) * (max_sigma ** 2 / 2 * term1 + r ** 2 / 4 * term2))
+    return torch.tensor(sum(quality))
 
 
 # 主函数
